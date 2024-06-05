@@ -45,6 +45,29 @@ serve({
       }
     }
 
+    // #region DELETE /borrar-task?contacto-id=123
+    if (req.method === "DELETE" && url.pathname === "/borrar-task") {
+      const taskId = url.searchParams.get("id");
+
+      if (!taskId) {
+        return withCors(
+          new Response("El id en el parámetro es requerido", { status: 400 })
+        );
+      }
+
+      try {
+        await dbQuery("DELETE FROM tasks  WHERE id = ?", [taskId]);
+        return withCors(new Response("task eliminado", { status: 204 }));
+      } catch (error) {
+        console.log(error);
+        return withCors(
+          new Response("Error al intentar eliminar el tarea de la bd", {
+            status: 500,
+          })
+        );
+      }
+    }
+
     return withCors(Response.json({ message: "Not found" }, { status: 404 }));
   },
 });
